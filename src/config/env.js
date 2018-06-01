@@ -4,14 +4,14 @@
  * baseUrl: 域名地址
  * routerMode: 路由模式
  * baseImgPath: 图片存放地址
- * 
+ * http://humanityerror.com
  */
 let baseUrl = ''; 
 let routerMode = 'hash';
 let baseImgPath;
 
 if (process.env.NODE_ENV == 'development') {
-	baseUrl = '';
+	// baseUrl = '';
     baseImgPath = '/img/';
 }else{
 	// baseUrl = '//elm.cangdu.org';

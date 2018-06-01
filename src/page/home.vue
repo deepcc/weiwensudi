@@ -1,31 +1,38 @@
 <template>
     <div>
         <head-top></head-top>
+		<el-tabs type="border-card">
+			<el-tab-pane label="表单提交">
+				
         <el-row style="margin-top: 20px;">
   			<el-col :span="12" :offset="4">
 		        <el-form :model="formData" :rules="rules" ref="formData" label-width="110px" class="demo-formData">
-					<el-form-item label="读者名称" prop="name">
-						<el-input v-model="formData.name"></el-input>
+					<el-form-item label="读者名称" prop="reader_name">
+						<el-input v-model="formData.reader_name"></el-input>
 					</el-form-item>
-					<el-form-item label="阅读书名" prop="description">
-						<el-input v-model="formData.description"></el-input>
+					<el-form-item label="阅读书名" prop="book_name">
+						<el-input v-model="formData.book_name"></el-input>
 					</el-form-item>
 					
 					<el-form-item label="阅读页面" style="white-space: nowrap;">
-						<el-input v-model="formData.startPageNum" style="width:50px"></el-input> 至
-						<el-input v-model="formData.endPageNum" style="width:50px"></el-input> 页
+						<el-input v-model="formData.begin_page" style="width:50px"></el-input> 至
+						<el-input v-model="formData.end_page" style="width:50px"></el-input> 页
 					</el-form-item>
-					<el-form-item label="精彩摘录" prop="zhailu">
-						<div style="padding-bottom:10px;">
-							第 <el-input v-model="formData.pagenum" style="width:50px"></el-input> 页
+					<el-form-item label="精彩摘录" v-for="(item,index) in formData.excerpt" :key="index"  >
+						<i  v-if="formData.excerpt.length>1" @click="removeExcerptFn(index)" class="el-icon-close"></i>
+						<el-input type="textarea" :rows="5" v-model="item.content"></el-input>
+						<div style="padding-top:10px; padding-bottom:10px;">
+							<span>第 <el-input v-model="item.page" style="width:50px"></el-input> 页 </span>
+							<span><el-button type="primary" @click="addCommentFn()">添加点评</el-button></span>
+						
 						</div>
-						<el-input type="textarea" rows="5" v-model="formData.zhailu"></el-input>
+						<el-input type="textarea" :rows="3" v-model="item.comment"></el-input>
 					</el-form-item>
 					<el-form-item label=" " >
-						<el-button type="primary" @click="addZhailuFn()">添加摘录</el-button>
+						<el-button type="primary" @click="addExcerptFn()">添加摘录</el-button>
 					</el-form-item>
-					<el-form-item label="心得感悟" prop="ganwu">
-						<el-input type="textarea" rows="5" v-model="formData.ganwu"></el-input>
+					<el-form-item label="心得感悟" >
+						<el-input type="textarea" :rows="5" v-model="formData.feelings"></el-input>
 					</el-form-item>
 
 					<el-form-item class="button_submit">
@@ -35,43 +42,69 @@
 				</el-form>
   			</el-col>
   		</el-row>
+			</el-tab-pane>
+			<el-tab-pane label="文件提交">
+				
         <el-row style="margin-top: 20px;">
   			<el-col :span="12" :offset="4">
 				<h3 class="text-center" style="margin:20px;">导入文件生成悦享见证</h3>
-		        <el-form :model="formData" :rules="rules" ref="formData" label-width="110px" class="demo-formData">
+		        <el-form :model="formDataFile" :rules="rules" ref="formData" label-width="110px" class="demo-formData">
 					<el-form-item label="读者名称" prop="name">
 						<el-input v-model="formData.name"></el-input>
 					</el-form-item>
 					<el-form-item label="" prop="name">
 						<el-input type="button" value="上传文件(.txt)" onclick="upload.click()" class="imgBtn"/>
 						<input type="file" accept="image/*" id="upload" name="upload" style="display:none">
+
+						<el-upload
+							class="upload-demo"
+							ref="upload"
+							action="https://jsonplaceholder.typicode.com/posts/"
+							:on-preview="handlePreview"
+							:on-remove="handleRemove"
+							:file-list="fileList"
+							:auto-upload="false">
+							<el-button slot="trigger" size="small" type="primary">选取文件</el-button>
+							<el-button style="margin-left: 10px;" size="small" type="success" @click="submitUpload">上传到服务器</el-button>
+							<div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
+						</el-upload>
 					</el-form-item>
 					<el-form-item class="button_submit">
-						<el-button type="primary" @click="submitForm('formData')">格式处理</el-button>
-						<el-button type="primary" @click="yunxiangForm('formData')">生成悦享见证</el-button>
+						<el-button type="primary" @click="submitForm('formDataFile')">格式处理</el-button>
+						<el-button type="primary" @click="yunxiangForm('formDataFile')">生成悦享见证</el-button>
 					</el-form-item>
 
 				</el-form>
   			</el-col>
   		</el-row>
+			</el-tab-pane>
+		</el-tabs>
     </div>
 </template>
 
 <script>
     import headTop from '@/components/headTop'
-    import {cityGuess, addShop, searchplace, foodCategory} from '@/api/getData'
+    import {witness} from '@/api/getData'
     import {baseUrl, baseImgPath} from '@/config/env'
     export default {
     	data(){
     		return {
-    			city: {},
+				formDataFile:{
+					
+					reader_name:'', // 读者名称：
+
+				},
     			formData: {
-					name: '', //店铺名称
-					address: '', //地址
-					latitude: '',
-					longitude: '',
-					description: '', //介绍
-					promotion_info: '',
+					
+					reader_name:'11111111111', // 读者名称：
+					book_name:'111111111', // 阅读书名：
+					begin_page:'1',// 阅读页面开始： 
+					end_page:'2', // 阅读页面结束：
+					excerpt:[{
+						page:'1',
+						content:'111111111111'
+					}], // 精彩摘录：
+					feelings:'11111111111111',// 心得感悟： 
        	 			
 		        },
 		        rules: {
@@ -95,51 +128,39 @@
     		this.initData();
     	},
     	methods: {
-    		
+			initData(){},
+			addExcerptFn(){// 添加摘要
+				var _this = this;
+				_this.formData.excerpt.push({
+						page:'',
+						content:''
+					})
+			},
+			removeExcerptFn(i){ // 删除摘要
+				var _this = this;
+				_this.formData.excerpt.splice(i,1)
+				
+			},
+			
 		    handleDelete(index){
 		    	this.activities.splice(index, 1)
 		    },
 		    submitForm(formName) {
+				console.log(this.formData);
+				
 				this.$refs[formName].validate(async (valid) => {
 					if (valid) {
-						Object.assign(this.formData, {activities: this.activities}, {
-							category: this.selectedCategory.join('/')
-						})
+						// Object.assign(this.formData, {activities: this.activities}, )
+						console.log(this.formData)
 						try{
-							let result = await addShop(this.formData);
+							let result = await witness(this.formData);
 							if (result.status == 1) {
 								this.$message({
 					            	type: 'success',
 					            	message: '添加成功'
 					          	});
-					          	this.formData = {
-									name: '', //店铺名称
-									address: '', //地址
-									latitude: '',
-									longitude: '',
-									description: '', //介绍
-									phone: '',
-									promotion_info: '',
-									float_delivery_fee: 5, //运费
-									float_minimum_order_amount: 20, //起价
-									is_premium: true,
-									delivery_mode: true,
-									new: true,
-									bao: true,
-									zhun: true,
-									piao: true,
-									startTime: '',
-				       	 			endTime: '',
-				       	 			image_path: '',
-				       	 			business_license_image: '',
-				       	 			catering_service_license_image: '',	
-						        };
-						        this.selectedCategory = ['快餐便当', '简餐'];
-						        this.activities = [{
-						        	icon_name: '减',
-						        	name: '满减优惠',
-						        	description: '满30减5，满60减8',
-							    }];
+					          
+						        
 							}else{
 								this.$message({
 					            	type: 'error',
@@ -160,9 +181,22 @@
 					}
 				});
 			},
+			submitUpload() {
+				this.$refs.upload.submit();
+			},
+			handleRemove(file, fileList) {
+				console.log(file, fileList);
+			},
+			handlePreview(file) {
+				console.log(file);
+			}
 		}
     }
 </script>
+<style scoped>
+ .el-form-item .el-icon-close{display:none}
+ .el-form-item:hover .el-icon-close{display:block}
+</style>
 
 <style lang="less">
 	@import '../style/mixin';
