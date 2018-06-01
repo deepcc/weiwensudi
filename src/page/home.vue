@@ -23,13 +23,13 @@
 						<el-input type="textarea" :rows="5" v-model="item.content"></el-input>
 						<div style="padding-top:10px; padding-bottom:10px;">
 							<span>第 <el-input v-model="item.page" style="width:50px"></el-input> 页 </span>
-							<span><el-button type="primary" @click="addCommentFn()">添加点评</el-button></span>
+							<span><el-button type="text" @click="item.commentFlag = !item.commentFlag">点评</el-button></span>
 						
 						</div>
-						<el-input type="textarea" :rows="3" v-model="item.comment"></el-input>
+						<el-input v-if="item.commentFlag" type="textarea" :rows="3" v-model="item.comment"></el-input>
 					</el-form-item>
 					<el-form-item label=" " >
-						<el-button type="primary" @click="addExcerptFn()">添加摘录</el-button>
+						<el-button type="primary" icon="el-icon-arrow-left" @click="addExcerptFn()">  添加摘录</el-button>
 					</el-form-item>
 					<el-form-item label="心得感悟" >
 						<el-input type="textarea" :rows="5" v-model="formData.feelings"></el-input>
@@ -53,22 +53,29 @@
 						<el-input v-model="formData.name"></el-input>
 					</el-form-item>
 					<el-form-item label="" prop="name">
-						<el-input type="button" value="上传文件(.txt)" onclick="upload.click()" class="imgBtn"/>
-						<input type="file" accept="image/*" id="upload" name="upload" style="display:none">
+						<!-- <el-input type="button" value="上传文件(.txt)" onclick="upload.click()" class="imgBtn"/>
+						<input type="file" accept="image/*" id="upload" name="upload" style="display:none"> -->
 
 						<el-upload
 							class="upload-demo"
 							ref="upload"
-							action="https://jsonplaceholder.typicode.com/posts/"
+							action=''
 							:on-preview="handlePreview"
 							:on-remove="handleRemove"
+							:on-change="handleChange"
 							:file-list="fileList"
+							accept = ".txt"
 							:auto-upload="false">
-							<el-button slot="trigger" size="small" type="primary">选取文件</el-button>
-							<el-button style="margin-left: 10px;" size="small" type="success" @click="submitUpload">上传到服务器</el-button>
-							<div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
+							<el-button slot="trigger"   type="primary">选取文件</el-button>
+							<!-- <el-button style="margin-left: 10px;" size="small" type="success" @click="submitUpload">上传到服务器</el-button> -->
+							<div slot="tip" class="el-upload__tip">只能上传txt文件，且不超过500kb</div>
 						</el-upload>
 					</el-form-item>
+					
+					<el-form-item class="">
+						<div v-html="contentHtml"></div>
+					</el-form-item>
+
 					<el-form-item class="button_submit">
 						<el-button type="primary" @click="submitForm('formDataFile')">格式处理</el-button>
 						<el-button type="primary" @click="yunxiangForm('formDataFile')">生成悦享见证</el-button>
@@ -89,6 +96,8 @@
     export default {
     	data(){
     		return {
+				fileList:[],
+				contentHtml:'1122',
 				formDataFile:{
 					
 					reader_name:'', // 读者名称：
@@ -102,7 +111,8 @@
 					end_page:'2', // 阅读页面结束：
 					excerpt:[{
 						page:'1',
-						content:'111111111111'
+						content:'111111111111',
+						commentFlag:false // 显示点评
 					}], // 精彩摘录：
 					feelings:'11111111111111',// 心得感悟： 
        	 			
@@ -133,7 +143,8 @@
 				var _this = this;
 				_this.formData.excerpt.push({
 						page:'',
-						content:''
+						content:'',
+						commentFlag:false
 					})
 			},
 			removeExcerptFn(i){ // 删除摘要
@@ -187,6 +198,23 @@
 			handleRemove(file, fileList) {
 				console.log(file, fileList);
 			},
+			handleChange(file, fileList) {
+				var _this = this;
+				if (file.raw) {					
+					let reader = new FileReader()  
+                    reader.onload = function (e) {
+						var html = e.target.result.replace(/[\n|\r\n]+/g,'<br>')
+						html = html.replace(/——P\.[0-9]+/g,function($1,$2){
+							console.log($1,$2);
+							return '<div style="text-align:right">'+$1+'</div>'
+						})
+                       _this.contentHtml = html;
+                    };
+                    reader.readAsText(file.raw,'gb2312');
+                
+				}
+				console.log(file, fileList);
+			},
 			handlePreview(file) {
 				console.log(file);
 			}
@@ -194,7 +222,8 @@
     }
 </script>
 <style scoped>
- .el-form-item .el-icon-close{display:none}
+.el-form-item{position: relative;}
+ .el-form-item .el-icon-close{display:none;position: absolute;right: 5px;top:5px;;}
  .el-form-item:hover .el-icon-close{display:block}
 </style>
 

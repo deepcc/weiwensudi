@@ -26,7 +26,7 @@ module.exports = {
     port: 8002,
     autoOpenBrowser: true,
     assetsSubDirectory: 'static',
-    assetsPublicPath: '/',
+    assetsPublicPath: '/static',
     proxyTable: {
       '/application': {
         target: 'http://rap2api.taobao.org/app/mock/14888/http://humanityerror.com', // 接口的域名

@@ -29,11 +29,11 @@ const routes = [
 	{
 		path: '/manage',
 		component: manage,
-		name: '',
+		name: '管理',
 		children: [{
 			path: '',
 			component: home,
-			meta: [],
+			meta: ['微文'],
 		},{
 			path: '/addShop',
 			component: addShop,
