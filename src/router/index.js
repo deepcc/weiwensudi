@@ -6,6 +6,7 @@ Vue.use(Router)
 const login = r => require.ensure([], () => r(require('@/page/login')), 'login');
 const manage = r => require.ensure([], () => r(require('@/page/manage')), 'manage');
 const home = r => require.ensure([], () => r(require('@/page/home')), 'home');
+const register = r => require.ensure([], () => r(require('@/page/register')), 'register');
 const addShop = r => require.ensure([], () => r(require('@/page/addShop')), 'addShop');
 const addGoods = r => require.ensure([], () => r(require('@/page/addGoods')), 'addGoods');
 const userList = r => require.ensure([], () => r(require('@/page/userList')), 'userList');
@@ -25,7 +26,11 @@ const routes = [
 	{
 		path: '/',
 		component: login
-	},
+	},{
+			path: '/register',
+				component: register,
+			meta: ['微文-注册'],
+		},
 	{
 		path: '/manage',
 		component: manage,

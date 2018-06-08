@@ -3,13 +3,19 @@ import fetch from '@/config/fetch'
 /**
  * 登陆
  */
-
 export const witness = data => fetch('/application/witness/upload/post', data, 'POST');
+
+/**
+ * 注册
+ */
+export const register = data => fetch('/user/register', data, 'POST');
+ 
 /**
  * 登陆
  */
 
-export const login = data => fetch('/admin/login', data, 'POST');
+export const login = data => fetch('/user/login', data, 'POST');
+// export const login = data => fetch('/admin/login', data, 'POST');
 
 /**
  * 退出

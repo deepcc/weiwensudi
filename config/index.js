@@ -26,33 +26,26 @@ module.exports = {
     port: 8002,
     autoOpenBrowser: true,
     assetsSubDirectory: 'static',
-    assetsPublicPath: '/static',
+    assetsPublicPath: '/',
     proxyTable: {
-      '/application': {
-        target: 'http://rap2api.taobao.org/app/mock/14888/http://humanityerror.com', // 接口的域名
-        // secure: false,  // 如果是https接口，需要配置这个参数
-        changeOrigin: true, // 如果接口跨域，需要进行这个参数配置
-        pathRewrite: {
-          '^/application': ''
-        }
-      }
     },
     context: [ //代理路径
         '/application',
-        '/shopping',
-        '/ugc',
-        '/v1',
-        '/v2',
-        '/v3',
-        '/v4',
-        '/bos',
-        '/member',
-        '/promotion',
-        '/eus',
-        '/payapi',
+        '/user',
+        // '/shopping',
+        // '/ugc',
+        // '/v1',
+        // '/v2',
+        // '/v3',
+        // '/v4',
+        // '/bos',
+        // '/member',
+        // '/promotion',
+        // '/eus',
+        // '/payapi',
         '/admin',
-        '/statis',
-        '/img',
+        // '/statis',
+        // '/img',
     ],
     // CSS Sourcemaps off by default because relative paths are "buggy"
     // with this option, according to the CSS-Loader README
