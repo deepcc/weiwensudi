@@ -37,7 +37,7 @@
 
 					<el-form-item class="button_submit">
 						<el-button type="primary" @click="submitForm('formData')">立即创建</el-button>
-						<el-button type="primary" @click="yunxiangForm('formData')">生成已有悦享见证</el-button>
+						<el-button type="primary" @click="previewFn('formData')">生成已有悦享见证</el-button>
 					</el-form-item>
 				</el-form>
   			</el-col>
@@ -78,7 +78,7 @@
 
 					<el-form-item class="button_submit">
 						<el-button type="primary" @click="submitForm('formDataFile')">格式处理</el-button>
-						<el-button type="primary" @click="yunxiangForm('formDataFile')">生成悦享见证</el-button>
+						<el-button type="primary" @click="previewFn('formDataFile')">生成悦享见证</el-button>
 					</el-form-item>
 
 				</el-form>
@@ -86,6 +86,25 @@
   		</el-row>
 			</el-tab-pane>
 		</el-tabs>
+		<el-dialog title="预览" v-if="dialogTableVisible" :visible.sync="dialogTableVisible"  >
+			<div>
+				{{formData.book_name}}
+				{{formData.reader_name}}
+				{{formData.begin_page}}
+				{{formData.end_page}}
+				
+				<div v-for="item in formData.excerpt">
+					{{item.page}}
+					{{item.content}}
+					<div v-if="item.commentFlag">
+						{{item.comment}}
+
+					</div>
+				</div>
+				<div>{{formData.feelings}}</div>
+
+			</div>
+		</el-dialog>
     </div>
 </template>
 
@@ -98,23 +117,24 @@
     		return {
 				fileList:[],
 				contentHtml:'1122',
+				dialogTableVisible:false,
+				dialogHtml:'',
 				formDataFile:{
-					
 					reader_name:'', // 读者名称：
-
 				},
     			formData: {
 					
-					reader_name:'11111111111', // 读者名称：
-					book_name:'111111111', // 阅读书名：
+					reader_name:'读者', // 读者名称：
+					book_name:'阅读书名阅读书名', // 阅读书名：
 					begin_page:'1',// 阅读页面开始： 
 					end_page:'2', // 阅读页面结束：
 					excerpt:[{
 						page:'1',
-						content:'111111111111',
+						content:'精彩摘录精彩摘录精彩摘录精彩摘录精彩摘录',
+						comment:'',
 						commentFlag:false // 显示点评
 					}], // 精彩摘录：
-					feelings:'11111111111111',// 心得感悟： 
+					feelings:'心得感悟心得感悟心得感悟心得感悟心得感悟心得感悟心得感悟',// 心得感悟： 
        	 			
 		        },
 		        rules: {
@@ -139,6 +159,10 @@
     	},
     	methods: {
 			initData(){},
+			previewFn(){
+				this.dialogTableVisible=true
+				this.dialogHtml=``
+			},
 			addExcerptFn(){// 添加摘要
 				var _this = this;
 				_this.formData.excerpt.push({
@@ -166,7 +190,7 @@
 						try{
 							let result = await witness(this.formData);
 							
-							if (result.status == 1) {
+							if (result.code == 0) {
 								this.$message({
 					            	type: 'success',
 					            	message: '添加成功'
@@ -176,7 +200,7 @@
 							}else{
 								this.$message({
 					            	type: 'error',
-					            	message: result.message
+					            	message: result.msg
 					          	});
 							}
 							console.log(result)

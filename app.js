@@ -3,6 +3,8 @@
 // const proxy = require('http-proxy-middleware');
 // const app = express();
 
+// nginx目录
+// /usr/local/nginx/conf
 
 
 
@@ -25,14 +27,22 @@ var options = {
     // }
 };
 
+
 // create the proxy (without context)
 var exampleProxy = proxy(options);
 
 // mount `exampleProxy` in web server
 var app = express();
-app.use('/api', exampleProxy);
-console.log('http://localhost:8001')
-app.listen(8001);
+
+// 静态页面
+// 这里一般设置你的静态资源路径
+app.use('/', express.static('./'));
+
+app.use('/application', exampleProxy);
+app.use('/user', exampleProxy);
+app.use('/user', exampleProxy);
+console.log('http://localhost:8000');
+app.listen(8000);
 // 这里从环境变量读取配置，方便命令行启动
 // HOST 指目标地址
 // PORT 服务端口
